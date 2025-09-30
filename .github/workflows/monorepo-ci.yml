@@ -1,9 +1,16 @@
-name: Monorepo CI (diagnostic first, stable)
+name: Monorepo CI
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
+
+# Actívalo por repo/PR:
+# - STRICT_LINT: "true" para que falle si hay formateo/estilo
+# - BUILD_DOCKER: "true" para construir las imágenes por carpeta
+env:
+  STRICT_LINT: "false"
+  BUILD_DOCKER: "false"
 
 jobs:
   ci:
@@ -42,43 +49,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show where we are
-        run: |
-          echo "Root:" && pwd
-          echo "Listing project dir:" && ls -la
-
       - name: Validate project structure
         run: |
           test -f requirements.txt
           test -f app/main.py
-          test -f tests/test_health.py
+          test -d tests
 
-      - name: Setup Python
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            ${{ matrix.project }}/requirements.txt
 
-      - name: Install minimal deps
+      - name: Install deps
         run: |
           python -m pip install -U pip
           pip install -r requirements.txt
           pip install pytest
 
-      - name: Smoke import
+      - name: Smoke import (FastAPI app)
         run: |
           python - << 'PY'
-          import os, sys
-          print("Python:", sys.version)
-          print("CWD:", os.getcwd())
-          print("Files:", os.listdir('.'))
-          import importlib.util
-          spec = importlib.util.spec_from_file_location("app.main", "app/main.py")
-          m = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(m)
-          assert hasattr(m, "app"), "FastAPI app not found in app/main.py"
-          print("Import OK and 'app' present")
+          import importlib.util, os
+          spec = importlib.util.spec_from_file_location("app.main","app/main.py")
+          m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          assert hasattr(m,"app"), "FastAPI 'app' not found in app/main.py"
+          print("Import OK")
           PY
 
       - name: Run tests
         run: pytest -q
 
+      - name: Lint (Ruff + Black) [non-blocking by default]
+        if: env.STRICT_LINT == 'true'
+        run: |
+          pip install ruff black
+          ruff check .
+          black --check .
+
+      - name: Docker build (optional)
+        if: env.BUILD_DOCKER == 'true' && hashFiles(format('{0}/Dockerfile', matrix.project)) != ''
+        run: |
+          docker build -t ${{ github.repository }}:${{ matrix.project }}-ci .
