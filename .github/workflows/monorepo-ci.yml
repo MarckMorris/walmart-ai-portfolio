@@ -1,4 +1,4 @@
-name: Monorepo CI (diagnostic first)
+name: Monorepo CI (diagnostic first, stable)
 
 on:
   push:
@@ -44,9 +44,8 @@ jobs:
 
       - name: Show where we are
         run: |
-          echo "Root:" && pwd && ls -la
-          echo "Project dir (${{ matrix.project }}):"
-          ls -la
+          echo "Root:" && pwd
+          echo "Listing project dir:" && ls -la
 
       - name: Validate project structure
         run: |
@@ -65,5 +64,21 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
+      - name: Smoke import
+        run: |
+          python - << 'PY'
+          import os, sys
+          print("Python:", sys.version)
+          print("CWD:", os.getcwd())
+          print("Files:", os.listdir('.'))
+          import importlib.util
+          spec = importlib.util.spec_from_file_location("app.main", "app/main.py")
+          m = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(m)
+          assert hasattr(m, "app"), "FastAPI app not found in app/main.py"
+          print("Import OK and 'app' present")
+          PY
+
       - name: Run tests
         run: pytest -q
+
