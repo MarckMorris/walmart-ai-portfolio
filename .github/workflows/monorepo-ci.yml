@@ -44,11 +44,9 @@ jobs:
 
       - name: Show where we are
         run: |
-          echo "Root:"
-          pwd
-          ls -la
+          echo "Root:" && pwd && ls -la
           echo "Project dir (${{ matrix.project }}):"
-          cd "${{ matrix.project }}" && pwd && ls -la
+          ls -la
 
       - name: Validate project structure
         run: |
@@ -64,9 +62,7 @@ jobs:
       - name: Install minimal deps
         run: |
           python -m pip install -U pip
-          # Instalamos desde requirements del proyecto (ligeros)
           pip install -r requirements.txt
-          # Aseguramos pytest por si el reqs trae algo distinto
           pip install pytest
 
       - name: Run tests
