@@ -1,0 +1,4 @@
+rule_id,category,rule,threshold
+R1,Beverages,Min facings per SKU,2
+R2,Beverages,Max lead days,10
+R3,Beverages,Min margin,0.15

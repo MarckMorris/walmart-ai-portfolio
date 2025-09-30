@@ -1,17 +1,28 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import os
+from typing import List, Dict, Any
+from src.planogram.core import check_planogram
 
-app = FastAPI(title="Walmart AI Demo", version="0.1.0")
+app = FastAPI(title="Merch Planogram Helper (LangChain base)")
 
-class Prompt(BaseModel):
-    text: str
+class SKU(BaseModel):
+    sku: str
+    facings: int
+    lead_days: int
+    margin: float
+
+class PlanogramRequest(BaseModel):
+    category: str
+    skus: List[SKU]
 
 @app.get("/health")
 def health():
-    return {"ok": True, "repo": os.getenv("REPO_NAME", "unknown")}
+    return {"ok": True, "repo": "merch-planogram-helper-langchain"}
 
-@app.post("/echo")
-def echo(p: Prompt):
-    provider = os.getenv("PROVIDER", "none")
-    return {"provider": provider, "echo": p.text}
+@app.post("/planogram/check")
+def planogram_check(req: PlanogramRequest):
+    try:
+        report = check_planogram(req.category, [s.dict() for s in req.skus])
+        return report
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

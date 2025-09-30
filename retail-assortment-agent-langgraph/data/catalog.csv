@@ -1,0 +1,6 @@
+sku,category,cost,price,lead_days,stock,brand
+BVG-001,Beverages,1.00,1.80,7,120,Polar
+BVG-002,Beverages,1.50,2.40,10,80,Polar
+BVG-003,Beverages,0.90,1.50,5,200,Andes
+BVG-004,Beverages,2.00,3.40,14,50,Andes
+BVG-005,Beverages,1.20,2.10,9,140,Sun
