@@ -1,6 +1,6 @@
 # Walmart AI Portfolio — 20 Repos (Scaffold)
 
-This bundle contains 20 ready-to-run repository scaffolds aligned with Walmart WD2298861.
+This bundle contains 20 ready-to-run repository scaffolds.
 
 ## How to use (Windows-friendly)
 1. Install: Git, Docker Desktop, Python 3.11, GitHub CLI (`gh`), kubectl.
