@@ -1,4 +1,3 @@
-$wf = @'
 name: Monorepo CI
 
 on:
@@ -34,7 +33,7 @@ jobs:
           - pm-okr-advisor-langchain
           - pm-prd-writer-crewai
           - pm-experiment-copilot-vanilla
-          - pm-backlog-prioritizer-langgraph
+          - pm-backlog-prioritiz er-langgraph
           - pm-stakeholder-qa-langchain
           - pm-risk-register-vanilla
 
@@ -95,10 +94,3 @@ jobs:
         if: env.BUILD_DOCKER == 'true' && hashFiles(format('{0}/Dockerfile', matrix.project)) != ''
         run: |
           docker build -t ${{ github.repository }}:${{ matrix.project }}-ci .
-'@
-Set-Content -Path ".github/workflows/monorepo-ci.yml" -Value $wf -Encoding UTF8
-
-git add .github/workflows/monorepo-ci.yml
-git commit -m "ci: replace monorepo-ci with clean YAML and proper PYTHONPATH step"
-git push
-
