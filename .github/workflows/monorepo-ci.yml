@@ -77,7 +77,8 @@ jobs:
           m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
           assert hasattr(m,"app"), "FastAPI 'app' not found in app/main.py"
           print("Import OK")
-          PY
+          PY      - name: Export PYTHONPATH to project root
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Run tests
         run: pytest -q
