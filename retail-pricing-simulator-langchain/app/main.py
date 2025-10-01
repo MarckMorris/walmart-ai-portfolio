@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+﻿from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 from src.pricing.core import load_catalog, simulate
@@ -11,7 +11,7 @@ class Item(BaseModel):
 
 class SimRequest(BaseModel):
     items: List[Item]
-    elasticity_default: float = -1.4  # elasticidad base si no hay dato por SKU
+    elasticity_default: float = -1.4
 
 @app.get("/health")
 def health():
