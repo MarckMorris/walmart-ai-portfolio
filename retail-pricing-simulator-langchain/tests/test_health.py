@@ -5,5 +5,4 @@ def test_health():
     c = TestClient(app)
     r = c.get("/health")
     assert r.status_code == 200
-    j = r.json()
-    assert j.get("ok") is True
+    assert r.json().get("ok") is True

@@ -1,0 +1,4 @@
+sku,price,cost,base_volume,elasticity
+SKU-001,4.00,2.20,1000,-1.5
+SKU-002,2.50,1.20,800,-1.2
+SKU-003,1.20,0.60,1200,
