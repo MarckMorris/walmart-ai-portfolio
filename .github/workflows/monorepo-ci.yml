@@ -1,3 +1,4 @@
+$wf = @'
 name: Monorepo CI
 
 on:
@@ -69,8 +70,8 @@ jobs:
 
       - name: Smoke import (FastAPI app)
         run: |
-          python - << 'PY'
-          import importlib.util, os
+          python - <<'PY'
+          import importlib.util
           spec = importlib.util.spec_from_file_location("app.main","app/main.py")
           m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
           assert hasattr(m,"app"), "FastAPI 'app' not found in app/main.py"
@@ -94,3 +95,10 @@ jobs:
         if: env.BUILD_DOCKER == 'true' && hashFiles(format('{0}/Dockerfile', matrix.project)) != ''
         run: |
           docker build -t ${{ github.repository }}:${{ matrix.project }}-ci .
+'@
+Set-Content -Path ".github/workflows/monorepo-ci.yml" -Value $wf -Encoding UTF8
+
+git add .github/workflows/monorepo-ci.yml
+git commit -m "ci: replace monorepo-ci with clean YAML and proper PYTHONPATH step"
+git push
+
